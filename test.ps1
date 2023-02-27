@@ -1,4 +1,1 @@
-params(
-    [string]$MyHost,
-    [int]$MyPort
-)
+Get-LocalUser
