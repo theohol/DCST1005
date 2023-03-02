@@ -1,16 +1,16 @@
-GivenName;SurName;DisplayName;Department;Path
-Ola;Nordmann;Ola Nordmann;HR;"OU=hr,OU=Sec_users,DC=core,DC=sec"
-Kari;Nordmann;Kari Nordmann;IT;"OU=it,OU=Sec_users,DC=core,DC=sec"
-Hans;Johansen;Hans Johansen;Legal;"OU=legal,OU=Sec_users,DC=core,DC=sec"
-Pernille;Hansen;Pernille Hansen;Legal;"OU=legal,OU=Sec_users,DC=core,DC=sec"
-Svein;Nilsen;Svein Nilsen;IT;"OU=it,OU=Sec_users,DC=core,DC=sec"
-Frank;Pettersen;Frank Pettersen;IT;"OU=it,OU=Sec_users,DC=core,DC=sec"
-Stine;Henriksen;Stine Henriksen;IT;"OU=it,OU=Sec_users,DC=core,DC=sec"
-Lars;Svendsen;Lars Svendsend;Inactive;"OU=inactive,OU=Sec_users,DC=core,DC=sec"
-Nils;Bo;Nils Bo;Accounting;"OU=accounting,OU=Sec_users,DC=core,DC=sec"
-Guri;Jensen;Guri Jensen;Accounting;"OU=accounting,OU=Sec_users,DC=core,DC=sec"
-Stein Henrik;Førde;;IT;"OU=it,OU=Sec_users,DC=core,DC=sec"
-Silje Cathrine;Årdal;;IT;"OU=it,OU=Sec_users,DC=core,DC=sec"
-Frank Ove;Færesvåg;;Accounting;"OU=accounting,OU=Sec_users,DC=core,DC=sec"
-Mia;Olsen;;Accounting;"OU=accounting,OU=Sec_users,DC=core,DC=sec"
-Kari Margrethe;Solvågshaug;;HR;"OU=hr,OU=Sec_users,DC=core,DC=sec"
+GivenName;SurName;DisplayName;Password;Department
+Ola;Nordmann;Ola Nordmann;;HR
+Kari;Nordmann;Kari Nordmann;;IT
+Hans;Johansen;Hans Johansen;;Legal
+Pernille;Hansen;Pernille Hansen;;Legal
+Svein;Nilsen;Svein Nilsen;;IT
+Frank;Pettersen;Frank Pettersen;;IT
+Stine;Henriksen;Stine Henriksen;;IT
+Lars;Svendsen;Lars Svendsend;;Inactive
+Nils;Bo;Nils Bo;;Accounting
+Guri;Jensen;Guri Jensen;;Accounting
+Stein Henrik;Førde;;;IT
+Silje Cathrine;Årdal;;;IT
+Frank Ove;Færesvåg;;;Accounting
+Mia;Olsen;;;Accounting
+Kari Margrethe;Solvågshaug;;;HR
