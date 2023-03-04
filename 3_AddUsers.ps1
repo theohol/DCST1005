@@ -1,12 +1,84 @@
-$users = Import-Csv -path 'C:\projects\dcst1005-demo\v23\users_final-v2.csv' -Delimiter "," #må endre til riktig path VIKTIGGGG 
+$users = Import-Csv -Path 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
+
+Function New-UserPassword {
+    $chars = [char[]](
+        (33..47 | ForEach-Object {[char]$_}) +
+        (58..64 | ForEach-Object {[char]$_}) +
+        (91..96 | ForEach-Object {[char]$_}) +
+        (123..126 | ForEach-Object {[char]$_}) +
+        (48..57 | ForEach-Object {[char]$_}) +
+        (65..90 | ForEach-Object {[char]$_}) +
+        (97..122 | ForEach-Object {[char]$_})
+    )
+
+    -join (0..14 | ForEach-Object { $chars | Get-Random })
+}
+
+function New-UserInfo {
+    param (
+        [Parameter(Mandatory=$true)][string] $fornavn,
+        [Parameter(Mandatory=$true)][string] $etternavn
+    )
+
+    if ($fornavn -match $([char]32)) {
+        $oppdelt = $fornavn.Split($([char]32))
+        $fornavn = $oppdelt[0]
+
+        for ( $index = 1 ; $index -lt $oppdelt.Length ; $index ++ ) {
+            $fornavn += ".$($oppdelt[$index][0])"
+        }
+    }
+
+    $UserPrincipalName = $("$($fornavn).$($etternavn)").ToLower()
+    $UserPrincipalName = $UserPrincipalName.Replace('æ','e')
+    $UserPrincipalName = $UserPrincipalName.Replace('ø','o')
+    $UserPrincipalName = $UserPrincipalName.Replace('å','a')
+    $UserPrincipalName = $UserPrincipalName.Replace('é','e')
+
+    Return $UserPrincipalName
+}
+
+$users = Import-Csv -Path 'C:\projects\dcst1005-demo\v23\users_advanced.csv' -Delimiter ";"
+$csvfile = @()
+$exportpathfinal = 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\endeligeBrukere.csv'
+$finalexport = 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\faktiskeBrukere'
 
 foreach ($user in $users) {
-    
-        [string] $samaccountname = $user.Samname #må ha samme variabel som i formatert csv fil
+    $password = New-UserPassword
+    $line = New-Object -TypeName psobject
+
+    Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $User.GivenName
+    Add-Member -InputObject $line -MemberType NoteProperty -Name SurName -Value $user.SurName
+    Add-Member -InputObject $line -MemberType NoteProperty -Name UserPrincipalName -Value "$(New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)@core.sec"
+    Add-Member -InputObject $line -MemberType NoteProperty -Name DisplayName -Value "$($user.GivenName) $($user.SurName)" 
+    Add-Member -InputObject $line -MemberType NoteProperty -Name department -Value $user.Department
+    Add-Member -InputObject $line -MemberType NoteProperty -Name Password -Value $password
+    Add-Member -InputObject $line -MemberType NoteProperty -Name Path -Value # Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
+    # Skrive pathen inn direkte eller legge den til etter at brukerne er opprettet? 
+    $csvfile += $line
+}
+
+$csvfile | Export-Csv -Path $exportpathfinal -NoTypeInformation -Encoding 'UTF8'
+Import-Csv -Path $exportpathfinal | ConvertTo-Csv -NoTypeInformation | ForEach-Object { $_ -Replace '"', ""} | Out-File $finalexport -Encoding 'UTF8'
+
+
+
+
+$users = Import-Csv -path 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\faktiskeBrukere.csv' -Delimiter ","
+
+foreach ($user in $users) {
+        $sam = $user.UserPrincipalName.Split("@")
+        if ($sam[0].Length -gt 19) {
+            "SAM for lang, bruker de 19 første tegnene i variabelen"
+            $sam[0] = $sam[0].Substring(0, 19) 
+        }
+        $sam[0]
+
+        [string] $samaccountname = $sam[0]
 
         [string] $department = $user.Department
         [string] $searchdn = "OU=$department,OU=$security_users,*"
-        
+        # $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}????
         
         if (!(Get-ADUser -Filter "sAMAccountName -eq '$($samaccountname)'")) {
             Write-Host "$samaccountname does not exist." -ForegroundColor Green
