@@ -2,7 +2,8 @@ $users = Import-Csv -Path 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\midlert
 
 Function New-UserPassword {
     $chars = [char[]](
-        (33..47 | ForEach-Object {[char]$_}) +
+        (33..43 | ForEach-Object {[char]$_}) + #DEC 44 er "," og derfor hoppes den over
+        (45..47 | ForEach-Object {[char]$_}) +
         (58..64 | ForEach-Object {[char]$_}) +
         (91..96 | ForEach-Object {[char]$_}) +
         (123..126 | ForEach-Object {[char]$_}) +
@@ -38,9 +39,8 @@ function New-UserInfo {
     Return $UserPrincipalName
 }
 
-$users = Import-Csv -Path 'C:\projects\dcst1005-demo\v23\users_advanced.csv' -Delimiter ";"
 $csvfile = @()
-$exportpathfinal = 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\endeligeBrukere.csv'
+$exportpath = 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\brukere.csv'
 $finalexport = 'C:\Users\theo.holmvik\DCST1005-oblig\DCST1005\faktiskeBrukere'
 
 foreach ($user in $users) {

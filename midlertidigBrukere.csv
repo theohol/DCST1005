@@ -1,16 +1,16 @@
 GivenName;SurName;DisplayName;Password;Department
-Ola;Nordmann;Ola;;HR
-Kari;Nordmann;;IT
-Hans;Johansen;;Legal
-Pernille;Hansen;;Legal
-Svein;Nilsen;;IT
-Frank;Pettersen;IT
-Stine;Henriksen;;IT
-Lars;Svendsen;;Inactive
-Nils;Bo;;Accounting
-Guri;Jensen;;Accounting
-Stein Henrik;Førde;;IT
-Silje Cathrine;Årdal;;IT
-Frank Ove;Færesvåg;;Accounting
-Mia;Olsen;;Accounting
-Kari Margrethe;Solvågshaug;;HR
+Ola;Nordmann;;;HR
+Kari;Nordmann;;;IT
+Hans;Johansen;;;Legal
+Pernille;Hansen;;;Legal
+Svein;Nilsen;;;IT
+Frank;Pettersen;;;IT
+Stine;Henriksen;;;IT
+Lars;Svendsen;;;Inactive
+Nils;Bo;;;Accounting
+Guri;Jensen;;;Accounting
+Stein Henrik;Førde;;;IT
+Silje Cathrine;Årdal;;;IT
+Frank Ove;Færesvåg;;;Accounting
+Mia;Olsen;;;Accounting
+Kari Margrethe;Solvågshaug;;;HR
