@@ -11,3 +11,12 @@
 
 #Flytting av PCer ved hjelp av csv fil
 
+$OUPCer = Import-Csv -Path 'C:\projects\dcst1005-demo\v23\users.csv' -Delimiter ";"
+
+foreach ($OUPC in $OUPCer){
+    $array = @($OUPC.PCer)
+
+    foreach ($PC in $array){
+        echo $PC
+    }
+}
