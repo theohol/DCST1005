@@ -11,12 +11,12 @@
 
 #Flytting av PCer ved hjelp av csv fil
 
-$OUPCer = Import-Csv -Path '/Users/trygve/Documents/GitHub/DCST1005/test.csv' -Delimiter ";"
+$OUPCer = Import-Csv -Path 'C:\projects\DCST1005\MaskinerTilOU.csv' -Delimiter ";"
 foreach ($OUPC in $OUPCer){
     $array = ($OUPC.PCer).Split(",")
     $OU = $OUPC.OUer
 
     foreach ($PC in $array){
-        Get-ADComputer "$PC" | Move-ADObject -TargetPath "OU=Computer,OU=$OU,DC=core,DC=sec"
+        Get-ADComputer "$PC" | Move-ADObject -TargetPath "OU=$OU,OU=Computer,DC=core,DC=sec"
     }
 }
