@@ -7,7 +7,7 @@ Invoke-Command -ComputerName srv1 -ScriptBlock {New-Item -Path "c:\" -Name 'shar
 
 Enter-PSSession -ComputerName srv1
 
-$folders = ('C:\dfsroots\files','C:\shares\accounting','C:\shares\hr','C:\shares\it','C:\shares\legal', 'C:\shares\inactive')
+$folders = ('C:\dfsroots\files','C:\shares\accounting','C:\shares\hr','C:\shares\it','C:\shares\legal', 'C:\shares\inactive', 'C:\shares\management')
 
 $folders | ForEach-Object {$sharename = (Get-Item $_).name; New-SMBShare -Name $shareName -Path $_ -FullAccess Everyone}
 
