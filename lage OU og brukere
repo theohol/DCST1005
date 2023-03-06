@@ -1,0 +1,170 @@
+$security_users = "Security_Users"
+$security_groups = "Security_Groups"
+$security_computers = "Security_Computers"
+
+$topOUs = @($security_users,$security_groups,$security_computers )
+$departments = @('accounting','it','hr','legal','inactive')
+
+#Lager OU-ene for hver avdeling i bedrifften vår
+foreach ($ou in $topOUs) {
+    New-ADOrganizationalUnit $ou -Description "Top OU for Secure Security" -ProtectedFromAccidentalDeletion:$false #Sett true før livemiljø
+    $topOU = Get-ADOrganizationalUnit -Filter * | Where-Object {$_.name -eq "$ou"}
+        foreach ($department in $departments) {
+            New-ADOrganizationalUnit $department `
+                        -Path $topOU.DistinguishedName `
+                        -Description "Deparment OU for $department in topOU $topOU" `
+                        -ProtectedFromAccidentalDeletion:$false #True før livemiljø
+        }
+}
+
+# ----- Gruppe Struktur ----- #
+
+foreach ($department in $departments) {
+    $path = Get-ADOrganizationalUnit -Filter * | 
+            Where-Object {($_.name -eq "$department") `
+            -and ($_.DistinguishedName -like "OU=$department,OU=$security_groups,*")}
+    New-ADGroup -Name "g_$department" `
+            -SamAccountName "g_$department" `
+            -GroupCategory Security `
+            -GroupScope Global `
+            -DisplayName "g_$department" `
+            -Path $path.DistinguishedName `
+            -Description "$department group"
+}
+
+#Lager en global gruppe
+New-ADGroup -name "g_all_employee" `
+            -SamAccountName "g_all_employee" `
+            -GroupCategory Security `
+            -GroupScope Global `
+            -DisplayName "g_all_employee" `
+            -path "OU=Security_Groups,DC=core,DC=sec" `
+            -Description "all employee"
+
+
+
+
+
+
+
+
+
+$users = Import-Csv -Path 'C:\Users\anders.fjermedal\Documents\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
+
+Function New-UserPassword {
+    $chars = [char[]](
+        (33..47 | ForEach-Object {[char]$_}) + #DEC 44 er "," og derfor hoppes den over
+        
+        (60..64 | ForEach-Object {[char]$_}) +
+        (91..96 | ForEach-Object {[char]$_}) +
+        (123..126 | ForEach-Object {[char]$_}) +
+        (48..57 | ForEach-Object {[char]$_}) +
+        (65..90 | ForEach-Object {[char]$_}) +
+        (97..122 | ForEach-Object {[char]$_})
+    )
+
+    -join (0..14 | ForEach-Object { $chars | Get-Random })
+}
+
+function New-UserInfo {
+    param (
+        [Parameter(Mandatory=$true)][string] $fornavn,
+        [Parameter(Mandatory=$true)][string] $etternavn
+    )
+
+    if ($fornavn -match $([char]32)) {
+        $oppdelt = $fornavn.Split($([char]32))
+        $fornavn = $oppdelt[0]
+
+        for ( $index = 1 ; $index -lt $oppdelt.Length ; $index ++ ) {
+            $fornavn += ".$($oppdelt[$index][0])"
+        }
+    }
+
+    $UserPrincipalName = $("$($fornavn).$($etternavn)").ToLower()
+    $UserPrincipalName = $UserPrincipalName.Replace('æ','e')
+    $UserPrincipalName = $UserPrincipalName.Replace('ø','o')
+    $UserPrincipalName = $UserPrincipalName.Replace('å','a')
+    $UserPrincipalName = $UserPrincipalName.Replace('é','e')
+
+    Return $UserPrincipalName
+}
+
+$csvfile = @()
+$exportpath = 'C:\Users\anders.fjermedal\Documents\DCST1005\brukere.csv'
+$finalexport = 'C:\Users\anders.fjermedal\Documents\DCST1005\faktiskeBrukere.csv'
+
+foreach ($user in $users) {
+    $password = New-UserPassword
+    $line = New-Object -TypeName psobject
+    
+    $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
+    
+        if ($sam.Length -gt 19) {
+            "SAM for lang, bruker de 19 første tegnene i variabelen"
+            $sam = $sam.Substring(0, 19) 
+        }
+        $sam
+        [string] $samaccountname = $sam
+        [string] $department = $user.Department
+        [string] $searchdn = "OU=$department,OU=$security_users,*"
+        $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
+
+
+    
+    Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $User.GivenName
+    Add-Member -InputObject $line -MemberType NoteProperty -Name SurName -Value $user.SurName
+    Add-Member -InputObject $line -MemberType NoteProperty -Name UserPrincipalName -Value "$(New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)@core.sec"
+    Add-Member -InputObject $line -MemberType NoteProperty -Name DisplayName -Value "$($user.GivenName) $($user.SurName)" 
+    Add-Member -InputObject $line -MemberType NoteProperty -Name department -Value $user.Department
+    Add-Member -InputObject $line -MemberType NoteProperty -Name Password -Value $password
+    Add-Member -InputObject $line -MemberType NoteProperty -Name Path -Value  $path
+    Add-Member -InputObject $line -MemberType NoteProperty -Name SamAccountName -Value $samaccountname
+    
+    $csvfile += $line
+}
+
+$csvfile | Export-Csv -Path $exportpath -NoTypeInformation -Encoding 'UTF8'
+Import-Csv -Path $exportpath | ConvertTo-Csv -Delimiter ";" | ForEach-Object { $_ -Replace '"', ""} | Out-File $finalexport -Encoding 'UTF8'
+
+
+
+
+$users = Import-Csv -path 'C:\Users\anders.fjermedal\Documents\DCST1005\faktiskeBrukere.csv' -Delimiter ";"
+
+foreach ($user in $users) {
+        
+                
+        #if (!(Get-ADUser -Filter "sAMAccountName -eq '$($samaccountname)'")) {
+         #   Write-Host "$samaccountname does not exist." -ForegroundColor Green        
+          #  Write-Host "Creating User ....%" -ForegroundColor Green
+         #   Write-Host $user.DisplayName -ForegroundColor Green
+
+            New-ADUser `
+            -SamAccountName $user.samaccountname `
+            -UserPrincipalName $user.UserPrincipalName `
+            -Name $user.DisplayName `
+            -GivenName $user.GivenName `
+            -Surname $user.SurName `
+            -Enabled $True `
+            -ChangePasswordAtLogon $false `
+            -DisplayName $user.DisplayName `
+            -Department $user.Department `
+            -Path $user.path `
+            -AccountPassword (ConvertTo-SecureString $user.Password -AsPlainText -Force)
+
+        }
+    
+
+
+$ADUsers = @()
+
+foreach ($department in $departments) {
+    $ADUsers = Get-ADUser -Filter {Department -eq $department} -Properties Department
+    #Write-Host "$ADUsers som er funnet under $department"
+
+    foreach ($aduser in $ADUsers) {
+        Add-ADPrincipalGroupMembership -Identity $aduser.SamAccountName -MemberOf "g_$department"
+    }
+
+}
