@@ -43,7 +43,7 @@ New-ADGroup -name "g_all_employee" `
 
 
 
-
+Get-ADUser -Filter * | ft
 
 
 
@@ -102,7 +102,7 @@ foreach ($user in $users) {
     
         if ($sam.Length -gt 19) {
             "SAM for lang, bruker de 19 første tegnene i variabelen"
-            $sam = $sam.Substring(0, 19) 
+            $sam = $sam.Substring(0, 18) 
         }
         $sam
         [string] $samaccountname = $sam
@@ -168,3 +168,5 @@ foreach ($department in $departments) {
     }
 
 }
+
+
