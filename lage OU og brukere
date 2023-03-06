@@ -43,12 +43,6 @@ New-ADGroup -name "g_all_employee" `
 
 
 
-Get-ADUser -Filter * | ft
-
-
-
-
-
 $users = Import-Csv -Path 'C:\Users\anders.fjermedal\Documents\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
 
 Function New-UserPassword {
