@@ -165,5 +165,11 @@ foreach ($department in $departments) {
 
 }
 
+#Starter en schedule task som sjekker om brukere har vært inactive (kjører hver dag kl 04:00)
 
-
+$ScheduleTime = New-ScheduledTaskTrigger -Daily -At 04:00
+$ScheduleUser = "core\Administrator"
+$SchedulePasswordUser = "oogabooga!!!12d2r43rdged54" #Ikke ideelt å ha passord i klartekst men for å gjøre det lettere i fremvisningen
+#så skriver vi bare passordet direkte inn. Best ville vært å bare skreve passordet inn når programmet kjører.
+$SchedulePS = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "C:\projects\DCST1005\7_MoveInactiveUsers.ps1"
+Register-ScheduledTask -TaskName "RemoveInactiveUsers" -Trigger $ScheduleTime -User $ScheduleUser -Action $SchedulePS -Password $SchedulePasswordUser
