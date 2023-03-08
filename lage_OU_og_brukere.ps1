@@ -95,17 +95,13 @@ foreach ($user in $users) {
     
     $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
     
-    if ($sam.Length -gt 19) {
-        Write-Host "SAM for lang, bruker de 19 første tegnene i variabelen"
-        $sam = $sam.Substring(0, 18) 
-    }
+        if ($sam.Length -gt 19) {
+            $sam = $sam.Substring(0, 18) 
+        }
         while ($sam -in $samcheck ) {
-            
-        Write-Host "sam finnes allerede, legger til 1"
-        $sam = "1" + $sam  
+            $sam = "1" + $sam  
         } 
         if ($sam.Length -gt 19) {
-           Write-Host "SAM for lang, bruker de 19 første tegnene i variabelen"
             $sam = $sam.Substring(0, 18) 
         }
         
@@ -117,16 +113,17 @@ foreach ($user in $users) {
         $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
         
 
-    
-    Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $User.GivenName
-    Add-Member -InputObject $line -MemberType NoteProperty -Name SurName -Value $user.SurName
-    Add-Member -InputObject $line -MemberType NoteProperty -Name UserPrincipalName -Value "$sam@core.sec"
-    Add-Member -InputObject $line -MemberType NoteProperty -Name DisplayName -Value "$($user.GivenName) $($user.SurName)" 
-    Add-Member -InputObject $line -MemberType NoteProperty -Name department -Value $user.Department
-    Add-Member -InputObject $line -MemberType NoteProperty -Name Password -Value $password
-    Add-Member -InputObject $line -MemberType NoteProperty -Name Path -Value  $path
-    Add-Member -InputObject $line -MemberType NoteProperty -Name SamAccountName -Value $samaccountname
-    
+        
+        Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $user.GivenName `
+          -PassThru | Add-Member -MemberType NoteProperty -Name SurName -Value $user.SurName `
+          -PassThru | Add-Member -MemberType NoteProperty -Name UserPrincipalName -Value "$sam@core.sec" `
+          -PassThru | Add-Member -MemberType NoteProperty -Name DisplayName -Value "$($user.GivenName) $($user.SurName)" `
+          -PassThru | Add-Member -MemberType NoteProperty -Name department -Value $user.Department `
+          -PassThru | Add-Member -MemberType NoteProperty -Name Password -Value $password `
+          -PassThru | Add-Member -MemberType NoteProperty -Name Path -Value $path `
+          -PassThru | Add-Member -MemberType NoteProperty -Name SamAccountName -Value $samaccountname
+  
+  
     $csvfile += $line
 }
 
