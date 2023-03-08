@@ -51,20 +51,6 @@ New-ADGroup -name "g_all_employee" `
 #formatering av csv fil
 $users = Import-Csv -Path 'C:\Users\anders.fjermedal\Documents\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
 
-Function New-UserPassword {
-    $chars = [char[]](
-        (33..47 | ForEach-Object {[char]$_}) + #DEC 59 er ";" og derfor hoppes den over
-        
-        (60..64 | ForEach-Object {[char]$_}) +
-        (91..96 | ForEach-Object {[char]$_}) +
-        (123..126 | ForEach-Object {[char]$_}) +
-        (48..57 | ForEach-Object {[char]$_}) +
-        (65..90 | ForEach-Object {[char]$_}) +
-        (97..122 | ForEach-Object {[char]$_})
-    )
-
-    -join (0..14 | ForEach-Object { $chars | Get-Random })
-}
 
 function New-UserInfo {
     param (
@@ -82,11 +68,8 @@ function New-UserInfo {
     }
 
     $UserPrincipalName = $("$($fornavn).$($etternavn)").ToLower()
-    $UserPrincipalName = $UserPrincipalName.Replace('æ','e')
-    $UserPrincipalName = $UserPrincipalName.Replace('ø','o')
-    $UserPrincipalName = $UserPrincipalName.Replace('å','a')
-    $UserPrincipalName = $UserPrincipalName.Replace('é','e')
-
+    $UserPrincipalName = $UserPrincipalName.Replace('æ','e').Replace('ø','o').Replace('å','a').Replace('é','e')
+    
     Return $UserPrincipalName
 }
 
@@ -95,7 +78,6 @@ function New-UserInfo {
 $csvfile = @()
 
 $exportpath = 'C:\Users\anders.fjermedal\Documents\DCST1005\brukere.csv'
-$finalexport = 'C:\Users\anders.fjermedal\Documents\DCST1005\faktiskeBrukere.csv'
 
 $samcheck = @()
 
@@ -104,8 +86,11 @@ foreach ($user in $123){
     $samcheck += $user.Trim()
 }
 
+
 foreach ($user in $users) {
-    $password = New-UserPassword
+    $pass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} )
+    $password = -join (0..14 | ForEach-Object { $pass1 | Get-Random })
+    
     $line = New-Object -TypeName psobject
     
     $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
@@ -145,11 +130,9 @@ foreach ($user in $users) {
     $csvfile += $line
 }
 
-$csvfile | Export-Csv -Path $exportpath -NoTypeInformation -Encoding 'UTF8'
-Import-Csv -Path $exportpath | ConvertTo-Csv -Delimiter ";" | ForEach-Object { $_ -Replace '"', ""} | Out-File $finalexport -Encoding 'UTF8'
+$csvfile | Export-Csv -Path $exportpath -Delimiter ";" -Usequotes Never -NoTypeInformation -Encoding 'UTF8'
 
-
-
+#plassere brukere i OU
 
 $users = Import-Csv -path 'C:\Users\anders.fjermedal\Documents\DCST1005\faktiskeBrukere.csv' -Delimiter ";"
 
@@ -182,4 +165,6 @@ foreach ($department in $departments) {
     }
 
 }
+
+
 
