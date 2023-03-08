@@ -98,9 +98,11 @@ foreach ($user in $users) {
         if ($sam.Length -gt 19) {
             $sam = $sam.Substring(0, 18) 
         }
+        $samcheck += $sam
         while ($sam -in $samcheck ) {
             $sam = "1" + $sam  
         } 
+        $samcheck += $sam
         if ($sam.Length -gt 19) {
             $sam = $sam.Substring(0, 18) 
         }
