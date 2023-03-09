@@ -89,7 +89,7 @@ $csvfile | Export-Csv -Path $exportpath -Delimiter ";" -Usequotes Never -NoTypeI
 
 #plassere brukere i OU
 
-$users = Import-Csv -path 'C:DCST1005\CSVFiler\faktiskeBrukere.csv' -Delimiter ";"
+$users = Import-Csv -path 'C:\DCST1005\CSVFiler\brukere.csv' -Delimiter ";"
 
 foreach ($user in $users) {
 
