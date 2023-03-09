@@ -1,61 +1,54 @@
-IKKE FERDIG:
+Import-Module GroupPolicy 
 
-##Group Policy Manager med bare PowerShell kommandoer
-#region Find the registry.pol that the GPO stores registry keys in
-New-GPO -Name 'Temp'
-Get-GPO -Name 'Temp'
+# Må bli enige om hvilke departments som skal ha hvilke policies.
 
-#Find the GUID
-$gpoGuid = (Get-GPO -Name 'Temp').Id.ToString()
-
-#Find the registry.pol file
-Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Name, Domain
-
-$domainController = 'DC1'
-$domainName = 'core.sec'
-$registryPolPath = "\\$domainController\sysvol\$domainName\Policies\{$gpoGuid}\User"
-Get-ChildItem -Path $registryPolPath
-
-$regPolPath = Join-Path -Path $registryPolPath -ChildPath 'registry.pol'
-
-##download and install a community module for reading the registry.pol file 
-Install-Module -Name GPRegistryPolicy
-
-Parse-PolFile -Path $regPolPath
-
-##Capture the registry key path
-$regKeyInfo = Parse-PolFile -Path $regPolPath
-
-##Creating the GPO with the settings enabled
-$gpoName = 'Hide Desktop Icons'
-New-GPO -name $gpoName -Comment 'This GPO hides all desktop icons.'
-
-$gpRegParams = @{
-    Name = $gpoName
-    Key = "HKCU\$($regKeyInfo.KeyName)"
-    ValueName = $regKeyInfo.ValueName
-    Type = $regKeyInfo.ValueType
-    Value = $regKeyInfo.ValueData
-}
-Set-GPRegistryValue @gpRegParams
-
-##Confirm the registry setting has been applied
-Get-GPRegistryValue -Name 'Hide Desktop Icons' -Key "HKCU\$($regKeyInfo.KeyName)"
-
-##Link the GPO to an OU
-
+## Eksempel domene
 $ou = 'LearnIT_Users'
 $domainDn = (Get-ADDomain).DistinguishedName
-
 $ouDn = "OU=$ou,$domainDn"
+
+## KAN VÆRE 'Set-GPregistryValue'-DELEN MÅ FJERNES ##
+
+## Prohibit access to Control Panel and PC settings
+$gpoName = 'No Control Panel and PC settings'
+New-GPO -Name $gpoName -comment 'Prohibit access to Control Panel and PC settings'
+
+Set-GPRegistryValue -Name $gpoName -Key "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -ValueName Nocontrolpanel -Type DWord -Value 01
+
 New-GPLink -Name $gpoName -Target $ouDn -LinkEnabled 'Yes'
 
-FORSLAG TIL GPO-er:
-1. Prohibit access to the control panel
-2. Prevent access to the command prompt
-3. Deny all removable storage access
-4. Prohibit users from installing unwanted software
-5. Reinforce guest account status settings
-6. Do not store LAN Manager hash values on next password changes
-7. Prevent auto-restarts with logged on users during scheduled update installations
-8. Monitor changes to your GPO settings
+## Prevent access to the command prompt
+$gpoName = 'No command prompt'
+New-GPO -Name $gpoName -comment 'Prevent access to the command prompt'
+
+Set-GPRegistryValue -Name $gpoName -Key "HKCU\Software\Policies\Microsoft\Windows\System" -ValueName DisableCMD -Type DWord -Value 01
+
+New-GPLink -Name $gpoName -Target $ouDn -LinkEnabled 'Yes'
+
+## Deny all removable storage access
+$gpoName = 'Deny all removable storage access'
+New-GPO -Name $gpoName -comment 'Deny all removable storage access'
+
+Set-GPRegistryValue -Name $gpoName -Key "HKCU\Software\Policies\Microsoft\Windows\RemovableStorageDevices" -ValueName Deny_All -Type DWord -Value 01
+
+New-GPLink -Name $gpoName -Target $ouDn -LinkEnabled 'Yes'
+
+## Prohibit users from installing unwanted software
+$gpoName = 'No installing of unwanted software'
+
+New-GPO -Name $gpoName -comment 'Prohibit users from installing unwanted software'
+Set-GPRegistryValue -Name $gpoName -Key "HKLM\Software\Policies\Microsoft\Windows\Installer" -ValueName DisableUserInstalls -Type DWord -Value 01
+
+New-GPLink -Name $gpoName -Target $ouDn -LinkEnabled 'Yes'
+
+## Prevent auto-restarts with logged on users during scheduled update installations
+$gpoName = 'No auto-restarts'
+New-GPO -Name $gpoName -comment 'Prevent auto-restarts with logged on users during scheduled update installations'
+
+Set-GPRegistryValue -Name $gpoName -Key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName NoAutoRebootWithLoggedOnUsers -Type Dword -Value 01
+
+New-GPLink -Name $gpoName -Target $ouDn -LinkEnabled 'Yes'
+
+
+
+
