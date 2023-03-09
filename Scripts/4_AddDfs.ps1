@@ -22,13 +22,7 @@ $folders | Where-Object {$_ -like "*shares*"} |
                 -Path $dfsPath `
                 -TargetPath $targetPath}
 
-
-$security_users = "Security_Users"
-$security_groups = "Security_Groups"
-$security_computers = "Security_Computers"
-
-$topOUs = @($security_users,$security_groups,$security_computers )
-$departments = @('it','hr','legal', 'management')
+$departments = @('management','accounting','it','hr','legal','inactive')
 
 # Her skjer det noe
 foreach ($department in $departments) {
