@@ -1,7 +1,6 @@
 
-
 #formatering av csv fil
-$users = Import-Csv -Path 'C:\DCST1005\CSVFiler\midlertidigBrukere.csv' -Delimiter ";"
+$users = Import-Csv -Path 'C:\Users\anders.fjermedal\Documents\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
 
 
 function New-UserInfo {
@@ -29,31 +28,42 @@ function New-UserInfo {
 
 $csvfile = @()
 
-$exportpath = 'C:\DCST1005\CSVFiler\brukere.csv'
+$exportpath = 'C:\Users\anders.fjermedal\Documents\DCST1005\brukere.csv'
 
 $samcheck = @()
 
-$123 = Get-ADUser -Filter * -Properties SamAccountName | Select-Object -ExpandProperty SamAccountName   #tatt fra chatgpt
-foreach ($user in $123){
+$hentSAMname = Get-ADUser -Filter * -Properties SamAccountName | Select-Object -ExpandProperty SamAccountName   #tatt fra chatgpt
+foreach ($user in $hentSAMname){
     $samcheck += $user.Trim()
 }
 
 
 foreach ($user in $users) {
+    $whileteller= @()
     $pass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} )
     $password = -join (0..14 | ForEach-Object { $pass1 | Get-Random })
-    
+    $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
     $line = New-Object -TypeName psobject
-    
     $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
+    
+    
+   
     
         if ($sam.Length -gt 19) {
             $sam = $sam.Substring(0, 18) 
+            $samcheck += $sam
         }
-        $samcheck += $sam
-        while ($sam -in $samcheck ) {
-            $sam = "1" + $sam  
-        } 
+        $whileSAM = $sam
+            while ($whileSAM -in $samcheck ) {
+            
+            $whileteller += 1 
+            $whileSam2 = ($whileteller.Count | Out-String)
+            $whileSAM2 = $whileSAM2.Trim()
+            $whileSAM = $whileSAM2 + $sam
+        }  
+        $sam = $whileSAM
+       
+        
         $samcheck += $sam
         if ($sam.Length -gt 19) {
             $sam = $sam.Substring(0, 18) 
@@ -64,13 +74,12 @@ foreach ($user in $users) {
         }
         $sam
         $samcheck += $sam
-        [string] $samaccountname = $sam
-        
+       
+       
+        [string] $samaccountname = $sam        
         [string] $department = $user.Department
         [string] $searchdn = "OU=$department,OU=$security_users,*"
-        $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
-        
-
+       
         
         Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $user.GivenName `
           -PassThru | Add-Member -MemberType NoteProperty -Name SurName -Value $user.SurName `
@@ -89,7 +98,7 @@ $csvfile | Export-Csv -Path $exportpath -Delimiter ";" -Usequotes Never -NoTypeI
 
 #plassere brukere i OU
 
-$users = Import-Csv -path 'C:DCST1005\CSVFiler\faktiskeBrukere.csv' -Delimiter ";"
+$users = Import-Csv -path 'C:\Users\anders.fjermedal\Documents\DCST1005\brukere.csv' -Delimiter ";"
 
 foreach ($user in $users) {
 
@@ -120,4 +129,3 @@ foreach ($department in $departments) {
     }
 
 }
-

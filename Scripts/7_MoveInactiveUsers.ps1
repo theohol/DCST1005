@@ -11,5 +11,5 @@ $inactiveUsers = Get-ADDomaincontroller -Filter * | % {$DC = $_.name ; Get-ADuse
         PasswordLastSet}
 
 foreach ($inactiveUser in $inactiveUsers){
-    Get-ADUser $inactiveUser.sAMAccountName | Move-ADObject -TargetPath "OU=inactive,OU=Groups,DC=core,DC=sec"
+    Get-ADUser $inactiveUser.sAMAccountName | Move-ADObject -TargetPath "OU=inactive,OU=Security_Groups,DC=core,DC=sec"
 }

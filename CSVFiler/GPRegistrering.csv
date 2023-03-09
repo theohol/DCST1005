@@ -1,3 +1,0 @@
- name;policy.name;policy.key;policy.valuename
-'Prohibit access to Control Panel and PC settings';"HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer";Nocontrolpanel
-'Prevent access to the command prompt';"HKCU\Software\Policies\Microsoft\Windows\System";DisableCMD

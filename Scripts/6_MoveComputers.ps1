@@ -17,6 +17,6 @@ foreach ($OUPC in $OUPCer){
     $OU = $OUPC.OUer
 
     foreach ($PC in $array){
-        Get-ADComputer "$PC" | Move-ADObject -TargetPath "OU=$OU,OU=Computer,DC=core,DC=sec"
+        Get-ADComputer "$PC" | Move-ADObject -TargetPath "OU=$OU,OU=Security_Computers,DC=core,DC=sec"
     }
 }
