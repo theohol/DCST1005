@@ -1,2 +1,2 @@
-# DCST1005
-#Hallo
+# DCST1005 - Prosjektoppgave
+# Gi oss A
