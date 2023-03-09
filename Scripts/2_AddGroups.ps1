@@ -1,9 +1,4 @@
-$security_users = "Security_Users"
-$security_groups = "Security_Groups"
-$security_computers = "Security_Computers"
-
-$topOUs = @($security_users,$security_groups,$security_computers )
-$departments = @('management,'accounting','it','hr','legal','inactive')
+$departments = @('management','accounting','it','hr','legal','inactive')
 
 foreach ($department in $departments) {
     $path = Get-ADOrganizationalUnit -Filter * | 
