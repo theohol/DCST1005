@@ -30,7 +30,7 @@ $security_computers = "Security_Computers"
 $topOUs = @($security_users,$security_groups,$security_computers )
 $departments = @('it','hr','legal', 'management')
 
-# Her skjer det noe
+# Legger til tilgangsgrupper for de forskjellige avdelingene
 foreach ($department in $departments) {
     $path = Get-ADOrganizationalUnit -Filter * | 
             Where-Object {($_.name -eq "$department") `
@@ -44,6 +44,10 @@ foreach ($department in $departments) {
             -Description "$department FILE SHARE group"
 }
 
+# Gjør avdelingsgruppene medlemmer av tilgangsgruppene
+foreach ($department in $departments) {
+        Add-ADPrincipalGroupMembership -Identity "g_$department" -MemberOf "l_fullaccess_$department-share"
+        }
 
 
 
