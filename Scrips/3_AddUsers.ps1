@@ -1,7 +1,7 @@
 
 
 #formatering av csv fil
-$users = Import-Csv -Path 'C:\Users\anders.fjermedal\Documents\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
+$users = Import-Csv -Path 'C:\DCST1005\Scripts\midlertidigBrukere.csv' -Delimiter ";"
 
 
 function New-UserInfo {
