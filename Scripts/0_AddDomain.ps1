@@ -29,15 +29,18 @@ $Params = @{
 }
 Install-ADDSForest @Params
 Restart-Computer
-# Log in as core\Administrator with password from above, test our domain
-Get-ADRootDSE
-<# The Get-ADRootDSE cmdlet gets the object that represents the root of the directory information tree of a directory server. This tree provides information about the configuration and capabilities of the directory server, such as the distinguished name for the configuration container, the current time on the directory server, and the functional levels of the directory server and the domain.
-#>
-Get-ADForest
-<#
-#>
-Get-ADDomain
-<#
-#>
-# Any computers joined the domain?
-Get-ADComputer -Filter * | Select-Object DNSHostName
+
+# Kjøres på hver maskin som skal legges i domenet
+# IP-adressen tilhører dc1-maskinen
+Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses 192.168.111.198
+
+$cred = Get-Credential -UserName 'secure\Administrator' -Message 'Cred'
+Add-Computer -Credential $cred -DomainName secure.sec -PassThru -Verbose
+Restart-Computer
+
+# Koble seg til andre maskiner over PowerShell
+# Hvis maskinen ikke tillater autentisering for oppkoblingen, kjør følgende i powershell:
+# winrm set winrm/config/service/auth '@{Kerberos="true"}' 
+# for å liste ut: winrm get winrm/config/service/auth
+# Hvis maskina ikke har aktivert PSRemote:
+# Enable-PSRemoting -Force
