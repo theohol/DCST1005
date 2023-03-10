@@ -1,6 +1,6 @@
 
 #formatering av csv fil
-$users = Import-Csv -Path 'C:\DCST1005\Scripts\midlertidigBrukere.csv' -Delimiter ";"
+$users = Import-Csv -Path 'C:\DCST1005\CSVFiler\midlertidigBrukere.csv' -Delimiter ";"
 
 
 function New-UserInfo {
@@ -28,7 +28,7 @@ function New-UserInfo {
 
 $csvfile = @()
 
-$exportpath = 'C:\DCST1005\Scripts\brukere.csv'
+$exportpath = 'C:\DCST1005\CSVFiler\brukere.csv'
 
 #lager en tom liste som brukes til å sjekke om samaccauntname finnes fra før 
 $samcheck = @()
@@ -106,7 +106,7 @@ $csvfile | Export-Csv -Path $exportpath -Delimiter ";" -Usequotes Never -NoTypeI
 
 #lage brukere
 
-$users = Import-Csv -path 'C:\DCST1005\Scripts\brukere.csv' -Delimiter ";"
+$users = Import-Csv -path 'C:\DCST1005\CSVFiler\brukere.csv' -Delimiter ";"
 
 foreach ($user in $users) {
 
