@@ -19,7 +19,7 @@ New-ADGroup -name "g_all_employee" `
             -GroupCategory Security `
             -GroupScope Global `
             -DisplayName "g_all_employee" `
-            -path "OU=Security_Groups,DC=core,DC=sec" `
+            -path "OU=Security_Groups,DC=secure,DC=sec" `
             -Description "all employee"
             
             
@@ -27,7 +27,7 @@ New-ADGroup -name "g_all_employee" `
 #Starter en schedule task som sjekker om brukere har vært inactive (kjører hver dag kl 04:00)
 
 $ScheduleTime = New-ScheduledTaskTrigger -Daily -At 04:00
-$ScheduleUser = "core\Administrator"
+$ScheduleUser = "secure\Administrator"
 $SchedulePasswordUser = "DCST1005GruppeOppgave!" #Ikke ideelt å ha passord i klartekst men for å gjøre det lettere i fremvisningen
 #så skriver vi bare passordet direkte inn. Best ville vært å bare skreve passordet inn når programmet kjører.
 $SchedulePS = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "C:\DCST1005\Scripts\8_MoveInactiveUsers.ps1"
