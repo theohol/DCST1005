@@ -18,10 +18,12 @@ foreach ($inactiveUser in $inactiveUsers){
         $InactivityPass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} )
         $InactivityPassword = -join (0..14 | ForEach-Object { $InactivityPass1 | Get-Random })
         $line = New-Object -TypeName psobject
+
         Get-ADUser $inactiveUser.sAMAccountName | Set-ADAccountPassword -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$InactivityPassword" -Force)
         Add-Member -InputObject $line -MemberType NoteProperty -Name Name -Value $inactiveUser.name `
             -PassThru | Add-Member -MemberType NoteProperty -Name PreviousDepartment -Value $inactiveUser.DistinguishedName `
             -PassThru | Add-Member -MemberType NoteProperty -Name Password -Value $InactivityPassword
+            
         Get-ADUser $inactiveUser.sAMAccountName | Move-ADObject -TargetPath "OU=inactive,OU=Security_Users,DC=core,DC=sec"
         $csvfil += $line
     }
