@@ -1,6 +1,6 @@
 
 #formatering av csv fil
-$users = Import-Csv -Path 'C:\Users\anders.fjermedal\Documents\DCST1005\midlertidigBrukere.csv' -Delimiter ";"
+$users = Import-Csv -Path 'C:\DCST1005\Scripts\midlertidigBrukere.csv' -Delimiter ";"
 
 
 function New-UserInfo {
@@ -28,7 +28,7 @@ function New-UserInfo {
 
 $csvfile = @()
 
-$exportpath = 'C:\Users\anders.fjermedal\Documents\DCST1005\brukere.csv'
+$exportpath = 'C:\DCST1005\Scripts\brukere.csv'
 
 $samcheck = @()
 
@@ -98,7 +98,7 @@ $csvfile | Export-Csv -Path $exportpath -Delimiter ";" -Usequotes Never -NoTypeI
 
 #plassere brukere i OU
 
-$users = Import-Csv -path 'C:\Users\anders.fjermedal\Documents\DCST1005\brukere.csv' -Delimiter ";"
+$users = Import-Csv -path 'C:\DCST1005\Scripts\brukere.csv' -Delimiter ";"
 
 foreach ($user in $users) {
 
