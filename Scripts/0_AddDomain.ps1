@@ -9,10 +9,6 @@ choco install -y powershell-core
 choco install -y git.install
 choco install -y vscode
 
-# Fra Git CMD
-git config --global user.name "NAVN"
-git config --global user.email "EPOST@EPOST.EPOST"
-
 # Installasjon av AD DS
 Install-WindowsFeature AD-Domain-Services, DNS -IncludeManagementTools
 $Password = Read-Host -Prompt 'Enter Password' -AsSecureString
