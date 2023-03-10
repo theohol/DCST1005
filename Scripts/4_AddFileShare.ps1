@@ -42,7 +42,10 @@ foreach ($department in $departments) {
 # Gjør avdelingsgruppene medlemmer av tilgangsgruppene
 foreach ($department in $departments) {
         Add-ADPrincipalGroupMembership -Identity "g_$department" -MemberOf "l_fullaccess_$department-share"
-        }
+# Her legger vi til management avdelingen i inactive, slik at de får kontroll over døde brukere
+        if($department -eq "inactive") {
+            Add-ADPrincipalGroupMembership -Identity "g_management" -MemberOf "l_fullaccess_inactive_share"
+        }}
 
 # Aksesskontrol på delte mapper
 
