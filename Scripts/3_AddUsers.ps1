@@ -83,7 +83,7 @@ foreach ($user in $users) {
         
         Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $user.GivenName `
           -PassThru | Add-Member -MemberType NoteProperty -Name SurName -Value $user.SurName `
-          -PassThru | Add-Member -MemberType NoteProperty -Name UserPrincipalName -Value "$sam@core.sec" `
+          -PassThru | Add-Member -MemberType NoteProperty -Name UserPrincipalName -Value "$sam@secure.sec" `
           -PassThru | Add-Member -MemberType NoteProperty -Name DisplayName -Value "$($user.GivenName) $($user.SurName)" `
           -PassThru | Add-Member -MemberType NoteProperty -Name department -Value $user.Department `
           -PassThru | Add-Member -MemberType NoteProperty -Name Password -Value $password `
