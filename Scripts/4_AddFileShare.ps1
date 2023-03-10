@@ -12,12 +12,12 @@ mkdir -Path $folders
 $folders | ForEach-Object {$sharename = (Get-Item $_).name; New-SMBShare -Name $shareName -Path $_ -FullAccess Everyone}
 
 # Kommandoen må kjøres på SRV1 med administratorbrukeren
-New-DfsnRoot -TargetPath \\srv1\files -Path \\core.sec\files -Type DomainV2
+New-DfsnRoot -TargetPath \\srv1\files -Path \\secure.sec\files -Type DomainV2
 
 # Oppretter mappene for avdelingene i \\bedriftsnavn.no\files
 $folders | Where-Object {$_ -like "*shares*"} | 
             ForEach-Object {$name = (Get-Item $_).name; `
-                $DfsPath = ('\\core.sec\files\' + $name); `
+                $DfsPath = ('\\secure.sec\files\' + $name); `
                 $targetPath = ('\\srv1\' + $name);New-DfsnFolderTarget `
                 -Path $dfsPath `
                 -TargetPath $targetPath}
@@ -48,7 +48,7 @@ foreach ($department in $departments) {
 
 # Utlister eksisterende tilgang
 
-$folders = "\\core.sec\files\inactive"
+$folders = "\\secure.sec\files\inactive"
 Get-SmbShareAccess -name 'inactive'
 Get-Acl -Path $folders
 (Get-Acl -Path $folders).Access
@@ -60,27 +60,27 @@ Get-Acl -Path $folders
 $folders = ('C:\shares\inactive')
 
 foreach ($department in $departments) {
-    $acl = Get-Acl \\core\files\$department
+    $acl = Get-Acl \\secure\files\$department
     $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("l_fullaccess_$department-share","FullControl","Allow")
     $acl.SetAccessRule($AccessRule)
-    $ACL | Set-Acl -Path "\\core\files\$department"
+    $ACL | Set-Acl -Path "\\secure\files\$department"
 }
 
 # Tilgangsregler vil bli arvet, men kan ikke endres eller slettes ($true, $true)
 
 foreach ($department in $departments) {
-        $ACL = Get-Acl -Path "\\core\files\$department"
+        $ACL = Get-Acl -Path "\\secure\files\$department"
         $ACL.SetAccessRuleProtection($true,$true)
-        $ACL | Set-Acl -Path "\\core\files\$department"
+        $ACL | Set-Acl -Path "\\secure\files\$department"
 }
 
 # Builtin-users vil ikke ha tilgang til andre sharer enn sitt eget på filsystemnivå
 
 foreach ($department in $departments) {
-        $acl = Get-Acl "\\core\files\$department"
+        $acl = Get-Acl "\\secure\files\$department"
         $acl.Access | Where-Object {$_.IdentityReference -eq "BUILTIN\Users" } | ForEach-Object { $acl.RemoveAccessRuleSpecific($_) }
-        Set-Acl "\\core\files\$department" $acl
-        (Get-ACL -Path "\\core\files\$department").Access | 
+        Set-Acl "\\secure\files\$department" $acl
+        (Get-ACL -Path "\\secure\files\$department").Access | 
                 Format-Table IdentityReference,FileSystemRights,AccessControlType,IsInherited,InheritanceFlags -AutoSize
 }
 
