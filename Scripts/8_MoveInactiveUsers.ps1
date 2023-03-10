@@ -14,7 +14,7 @@ $inactiveUsers = Get-ADDomaincontroller -Filter * | % {$DC = $_.name ; Get-ADuse
 $csvfil = @(Import-Csv -path 'C:\DCST1005\CSVFiler\InactiveBrukere.csv' -Delimiter ";")
 
 foreach ($inactiveUser in $inactiveUsers){
-    if ($inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),CN=Users,DC=core,DC=sec" -and $inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),OU=inactive,OU=Security_Users,DC=core,DC=sec") {
+    if ($inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),CN=Users,DC=secure,DC=sec" -and $inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),OU=inactive,OU=Security_Users,DC=secure,DC=sec") {
         $InactivityPass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} )
         $InactivityPassword = -join (0..14 | ForEach-Object { $InactivityPass1 | Get-Random })
         $line = New-Object -TypeName psobject
@@ -24,7 +24,7 @@ foreach ($inactiveUser in $inactiveUsers){
             -PassThru | Add-Member -MemberType NoteProperty -Name PreviousDepartment -Value $inactiveUser.DistinguishedName `
             -PassThru | Add-Member -MemberType NoteProperty -Name Password -Value $InactivityPassword
             
-        Get-ADUser $inactiveUser.sAMAccountName | Move-ADObject -TargetPath "OU=inactive,OU=Security_Users,DC=core,DC=sec"
+        Get-ADUser $inactiveUser.sAMAccountName | Move-ADObject -TargetPath "OU=inactive,OU=Security_Users,DC=secure,DC=sec"
         $csvfil += $line
     }
 }
