@@ -41,11 +41,13 @@ foreach ($user in $hentSAMname){
 
 
 foreach ($user in $users) {
+    #tom liste som brukes til å telle hvor mange ganger en whileløkke kjører
     $whileteller= @()
 
     #lager passord uten semikolon 
     $pass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} ) 
     $password = -join (0..14 | ForEach-Object { $pass1 | Get-Random })
+    
     $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
     $line = New-Object -TypeName psobject
     $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
@@ -73,7 +75,7 @@ foreach ($user in $users) {
         if ($sam.Length -gt 19) {
             $sam = $sam.Substring(0, 18) 
         }
-        #sjekker om siste character er et punktum og fjerner det for et gyldig samaccountname kan ikke slutte på et punktum 
+        #sjekker om siste character er et punktum og fjerner det, for et gyldig samaccountname kan ikke slutte på et punktum 
         $samcheck += $sam
         if( $sam.Substring($sam.Length - 1) -eq "."){
             $sam = $sam.Substring(0, $sam.Length - 1)
