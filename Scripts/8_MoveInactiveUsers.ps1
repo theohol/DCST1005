@@ -14,18 +14,23 @@ $inactiveUsers = Get-ADDomaincontroller -Filter * | % {$DC = $_.name ; Get-ADuse
 $csvfil = @(Import-Csv -path 'C:\DCST1005\CSVFiler\InactiveBrukere.csv' -Delimiter ";")
 
 foreach ($inactiveUser in $inactiveUsers){
-    if ($inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),CN=Users,DC=secure,DC=sec" -and $inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),OU=inactive,OU=Security_Users,DC=secure,DC=sec") {
+    if ($inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),CN=Users,DC=secure,DC=sec" `
+        -and $inactiveUser.DistinguishedName -ne "CN=$($inactiveUser.name),OU=inactive,OU=Security_Users,DC=secure,DC=sec") {
+        
+        #Genererer nytt passord til inaktive brukere    
         $InactivityPass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} )
         $InactivityPassword = -join (0..14 | ForEach-Object { $InactivityPass1 | Get-Random })
-        $line = New-Object -TypeName psobject
-
         Get-ADUser $inactiveUser.sAMAccountName | Set-ADAccountPassword -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$InactivityPassword" -Force)
+
+        #Formaterer csv fil og oppdaterer csvfil arrayet
+        $line = New-Object -TypeName psobject
         Add-Member -InputObject $line -MemberType NoteProperty -Name Name -Value $inactiveUser.name `
             -PassThru | Add-Member -MemberType NoteProperty -Name PreviousDepartment -Value $inactiveUser.DistinguishedName `
             -PassThru | Add-Member -MemberType NoteProperty -Name Password -Value $InactivityPassword
-            
+        $csvfil += $line 
+
+        #Flytter inaktive brukere til OU inactive
         Get-ADUser $inactiveUser.sAMAccountName | Move-ADObject -TargetPath "OU=inactive,OU=Security_Users,DC=secure,DC=sec"
-        $csvfil += $line
     }
 }
 
