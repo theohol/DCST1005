@@ -29,7 +29,7 @@ $departments = @('management', 'accounting', 'it', 'hr', 'legal', 'inactive')
 foreach ($department in $departments) {
     $path = Get-ADOrganizationalUnit -Filter * | 
             Where-Object {($_.name -eq "$department") `
-            -and ($_.DistinguishedName -like "OU=$department,OU=Groups,*")}
+            -and ($_.DistinguishedName -like "OU=$department,OU=Security_Groups,*")}
     New-ADGroup -Name "l_fullaccess_$department-share" `
             -SamAccountName "l_fullaccess_$department-share" `
             -GroupCategory Security `
