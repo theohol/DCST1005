@@ -50,7 +50,11 @@ New-GPO -Name $gpoName -comment 'Prevent auto-restarts with logged on users duri
 
 Set-GPRegistryValue -Name $gpoName -Key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName NoAutoRebootWithLoggedOnUsers -Type Dword -Value 01
 
+## Remote Desktop for test
 $OU = 'Security_Users'
-foreach ($group in $OU) {
-    Get-GPO -Name $GPOName | New-GPLink -Target "$group,DC=secure,DC=sec"
-}
+Get-GPO -Name $GPOName | New-GPLink -Target "OU=Security_Users,DC=secure,DC=sec"
+
+$gpoName = 'Allow Remote Desktop for Legal'
+New-GPO -Name $gpoName
+
+Get-GPO -Name $GPOName | New-GPLink -Target "OU=legal,OU=Security_Computers,DC=secure,DC=sec"
