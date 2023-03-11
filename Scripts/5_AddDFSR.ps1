@@ -7,6 +7,7 @@ foreach ($department in $departments) {
     mkdir -path $folder
 }
 
+$departments = @('management', 'accounting', 'it', 'hr', 'legal', 'inactive')
 
 # Utføres på SRV1, ikke via Enter-PSSession
 foreach ($department in $departments) {

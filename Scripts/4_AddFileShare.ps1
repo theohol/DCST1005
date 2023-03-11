@@ -14,7 +14,7 @@ $folders | ForEach-Object {$sharename = (Get-Item $_).name; New-SMBShare -Name $
 # Kommandoen må kjøres på SRV1 med administratorbrukeren
 New-DfsnRoot -TargetPath \\srv1\files -Path \\secure.sec\files -Type DomainV2
 
-# Oppretter mappene for avdelingene i \\bedriftsnavn.no\files
+# Oppretter mappene for avdelingene i \\secure.sec\files
 $folders | Where-Object {$_ -like "*shares*"} | 
             ForEach-Object {$name = (Get-Item $_).name; `
                 $DfsPath = ('\\secure.sec\files\' + $name); `
