@@ -1,5 +1,7 @@
 # ----- DFS Replication ----- #
 
+$departments = @('management', 'accounting', 'it', 'hr', 'legal', 'inactive')
+
 # Installeres på DC1
 Install-WindowsFeature -name FS-DFS-Replication -IncludeManagementTools -ComputerName dc1
 foreach ($department in $departments) {
@@ -7,7 +9,6 @@ foreach ($department in $departments) {
     mkdir -path $folder
 }
 
-$departments = @('management', 'accounting', 'it', 'hr', 'legal', 'inactive')
 
 # Utføres på SRV1, ikke via Enter-PSSession
 foreach ($department in $departments) {
