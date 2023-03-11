@@ -47,8 +47,7 @@ foreach ($user in $users) {
     #lager passord uten semikolon 
     $pass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} ) 
     $password = -join (0..14 | ForEach-Object { $pass1 | Get-Random })
-    
-    $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
+   
     $line = New-Object -TypeName psobject
     $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
     
@@ -87,9 +86,10 @@ foreach ($user in $users) {
         [string] $samaccountname = $sam        
         [string] $department = $user.Department
         [string] $searchdn = "OU=$department,OU=$security_users,*"
+        $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
        
         
-        Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $user.GivenName `         #-PassThru er tatt fra chatgpt
+        Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $user.GivenName `
           -PassThru | Add-Member -MemberType NoteProperty -Name SurName -Value $user.SurName `
           -PassThru | Add-Member -MemberType NoteProperty -Name UserPrincipalName -Value "$sam@secure.sec" `
           -PassThru | Add-Member -MemberType NoteProperty -Name DisplayName -Value "$($user.GivenName) $($user.SurName)" `
