@@ -1,3 +1,4 @@
+$Security_users = "Security_Users"
 
 #formatering av csv fil
 $users = Import-Csv -Path 'C:\DCST1005\CSVFiler\midlertidigBrukere.csv' -Delimiter ";"
