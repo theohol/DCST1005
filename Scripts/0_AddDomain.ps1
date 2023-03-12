@@ -40,3 +40,5 @@ Restart-Computer
 # for å liste ut: winrm get winrm/config/service/auth
 # Hvis maskina ikke har aktivert PSRemote:
 # Enable-PSRemoting -Force
+
+Get-ADComputer -Filter * | Select-Object DNSHostName
