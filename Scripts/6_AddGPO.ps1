@@ -22,17 +22,6 @@ foreach ($group in $OU) {
     Get-GPO -Name $GPOName | New-GPLink -Target "$group,OU=Security_Users,DC=secure,DC=sec"
 }
 
-## Deny all removable storage access
-$gpoName = 'Deny all removable storage access'
-New-GPO -Name $gpoName -comment 'Deny all removable storage access'
-
-Set-GPRegistryValue -Name $gpoName -Key "HKCU\Software\Policies\Microsoft\Windows\RemovableStorageDevices" -ValueName Deny_All -Type DWord -Value 01
-
-$OU = 'OU=accounting', 'OU=hr', 'OU=legal', 'OU=inactive'
-foreach ($group in $OU) {
-    Get-GPO -Name $GPOName | New-GPLink -Target "$group,OU=Security_Users,DC=secure,DC=sec"
-}
-
 ## Prohibit users from installing unwanted software
 $gpoName = 'No installing of unwanted software'
 
