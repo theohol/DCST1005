@@ -28,7 +28,8 @@ Restart-Computer
 
 # Kjøres på hver maskin som skal legges i domenet
 # IP-adressen tilhører dc1-maskinen
-Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses 192.168.111.198
+ipconfig
+Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses 192.168.111.194
 
 $cred = Get-Credential -UserName 'secure\Administrator' -Message 'Cred'
 Add-Computer -Credential $cred -DomainName secure.sec -PassThru -Verbose
