@@ -44,16 +44,8 @@ foreach ($user in $hentSAMname){
 foreach ($user in $users) {
     #tom liste som brukes til å telle hvor mange ganger en whileløkke kjører
     $whileteller= @()
-
-    #lager passord uten semikolon 
-    $pass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} ) 
-    $password = -join (0..14 | ForEach-Object { $pass1 | Get-Random })
-   
-    $line = New-Object -TypeName psobject
     $sam = (New-UserInfo -Fornavn $user.GivenName -Etternavn $user.SurName)
     
-    
-   
         #sjekker om samaccountname er for langt
         if ($sam.Length -gt 19) {
             $sam = $sam.Substring(0, 18) 
@@ -89,6 +81,11 @@ foreach ($user in $users) {
         [string] $searchdn = "OU=$department,OU=$security_users,*"
         $path = Get-ADOrganizationalUnit -Filter * | Where-Object {($_.name -eq $user.Department) -and ($_.DistinguishedName -like $searchdn)}
        
+        #lager passord uten semikolon 
+        $pass1 = (33..122-as [char[]] | Where-Object {($_ -ne 59)} ) 
+        $password = -join (0..14 | ForEach-Object { $pass1 | Get-Random })
+   
+        $line = New-Object -TypeName psobject
         
         Add-Member -InputObject $line -MemberType NoteProperty -Name GivenName -Value $user.GivenName `
           -PassThru | Add-Member -MemberType NoteProperty -Name SurName -Value $user.SurName `
@@ -99,7 +96,7 @@ foreach ($user in $users) {
           -PassThru | Add-Member -MemberType NoteProperty -Name Path -Value $path `
           -PassThru | Add-Member -MemberType NoteProperty -Name SamAccountName -Value $samaccountname
   
-  
+  #PassThru er tatt fra ghat gpt
     $csvfile += $line
 }
 
