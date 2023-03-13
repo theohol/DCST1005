@@ -9,7 +9,7 @@ $inactiveUsers = Get-ADDomaincontroller -Filter * | ForEach-Object {Get-ADuser `
         sAMAccountName,`
         @{n="LastLogon";e={[datetime]::FromFileTime($_.lastlogon)}},`
         PasswordLastSet,`
-        DistinguishedName}
+        DistinguishedName} #Modifisert kode fra https://serverfault.com/a/1084200 for bedre lastLogin    
 
 $csvfil = @(Import-Csv -path 'C:\DCST1005\CSVFiler\InactiveBrukere.csv' -Delimiter ";")
 
