@@ -3,7 +3,7 @@
 $inactivityLimit = [DateTime]::Today.AddDays(-60)
 
 $inactiveUsers = Get-ADDomaincontroller -Filter * | ForEach-Object {Get-ADuser `
-    -Filter '(PasswordLastSet -lt $inactivityLimit) -and (LastLogon -lt $inactivityLimit)' `
+    -Filter {(PasswordLastSet -lt $inactivityLimit) -and (LastLogon -lt $inactivityLimit)} `
     -properties * -Server $_.name | Select-Object `
         Name,`
         sAMAccountName,`
