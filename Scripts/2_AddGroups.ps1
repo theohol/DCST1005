@@ -1,4 +1,5 @@
 $departments = @('management','accounting','it','hr','legal','inactive')
+$security_groups = "Security_Groups"
 
 foreach ($department in $departments) {
     $path = Get-ADOrganizationalUnit -Filter * | 
